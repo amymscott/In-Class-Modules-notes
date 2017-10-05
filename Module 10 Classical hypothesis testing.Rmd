@@ -1,0 +1,78 @@
+---
+title: "Module 10"
+author: "Amy Scott"
+date: "10/3/2017"
+output: html_document
+---
+
+##Classical hypothesis testing
+this is only for frequentist data, normal/quassian
+
+T-test, one-tailed and two-tailed
+
+*this test only applies to normal data*
+
+ Ho= TINDB the two years
+ 
+ Ha= 2016>2015
+```{r}
+library(curl)
+v <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN597_Fall17/vervet-weights.csv")
+vervets <- read.csv(v, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+head(vervets)
+t.test(x = vervets$weight, mu=4.9, alternative = "greater")
+
+mu <- 4.9 # known mean
+x <- vervets$weight
+m <- mean(x)
+s <- sd(x)
+n <- length(x)
+sem <- s/sqrt(n)
+
+lower <- m - qt(1 - 0.05/2, df = n - 1) * sem
+upper <- m + qt(1 - 0.05/2, df = n - 1) * sem
+ci <- c(lower, upper)
+ci  # by hand
+
+```
+
+Now we are comparing two samples to see if they are the same or different
+
+*this test only applies to normal data*
+
+For the most generic case, where the two samples are independent and we cannot assume the variances of the two samples are equal, we can do what is called Welch’s t test
+```{r}
+f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN597_Fall17/colobus-weights.csv")
+colobus<- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+
+#t <- t.test(x = x, y = y, mu = 0, alternative = "two.sided")
+m <- colobus$weight[colobus$sex == "male"]
+f <- colobus$weight[colobus$sex == "female"]
+#mu <- 0  # you could leave this out... the default argument value is 0
+#t.test( one group, 2nd group, alternaive= "two.sided")
+t.test(m, f, alternative= "two.sided")
+```
+
+For the case, where the two samples are independent and we can assume the variances of the two samples are equal, what we do is:
+
+```{r}
+t <- t.test(x = x, y = y, mu = 0, var.equal = TRUE, alternative = "two.sided")
+#t.test(one group, two group, mu=0, var.equal=TRUE, alternative= "two.sided" )
+```
+
+Paired Samples
+
+```{r}
+f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN597_Fall17/iqs.csv")
+IQ <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+
+
+x <- IQ$IQ.before - IQ$IQ.after
+
+t.test(x, df = n - 1, alternative = "two.sided")
+# OR you can use paired="TRUE" in the , but i dont remember how to do that, so look up. I did this when i looked at the difference in distance when a male was and was not there.
+
+```
+Chi-squares: comparing differences in proportions
+
+
